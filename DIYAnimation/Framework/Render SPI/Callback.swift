@@ -20,7 +20,7 @@ internal final class Callback {
             Callback.perform()
             Callback.update()
         }
-        RunLoop.main.add(t, forMode: .defaultRunLoopMode)
+		RunLoop.main.add(t, forMode: .default)
         return t
     }()
     

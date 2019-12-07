@@ -1,5 +1,6 @@
 import AppKit
 import MetalKit
+import OpenGL.GL
 
 ///
 class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {

@@ -921,7 +921,7 @@ public class XPCEncoder {
         func encode(_ value: IOSurface, forKey key: Key) throws {
             try key.stringValue.withCString {
                 try throwIfExists(key, $0, value)
-                xpc_dictionary_set_value(self.content, $0, IOSurfaceCreateXPCObject(value))
+				xpc_dictionary_set_value(self.content, $0, IOSurfaceCreateXPCObject(__ioNS2CF(value)!))
             }
         }
         #endif

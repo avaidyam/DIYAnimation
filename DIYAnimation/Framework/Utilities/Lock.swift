@@ -76,7 +76,7 @@ internal final class Lock: CustomStringConvertible, Hashable {
     }
     
     /// 
-    internal var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	internal func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
 }

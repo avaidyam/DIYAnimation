@@ -92,7 +92,7 @@ internal final class PixelBuffer: CustomStringConvertible, Hashable {
     
     ///
     internal var ioSurface: IOSurface? {
-        return CVPixelBufferGetIOSurface(self.buffer)?.takeUnretainedValue()
+		return __ioCF2NS(CVPixelBufferGetIOSurface(self.buffer)?.takeUnretainedValue())
     }
 
     ///
@@ -146,7 +146,7 @@ internal final class PixelBuffer: CustomStringConvertible, Hashable {
     ///
     internal init?(surface: IOSurface, attributes: [String: Any]? = nil) {
         var x: Unmanaged<CVPixelBuffer>? = nil
-        CVPixelBufferCreateWithIOSurface(nil, surface, attributes as CFDictionary?, &x)
+		CVPixelBufferCreateWithIOSurface(nil, __ioNS2CF(surface)!, attributes as CFDictionary?, &x)
         guard let y = x?.takeRetainedValue() else { return nil }
         self.buffer = y
     }
@@ -240,7 +240,7 @@ internal final class PixelBuffer: CustomStringConvertible, Hashable {
         return lhs.buffer == rhs.buffer
     }
     
-    internal var hashValue: Int {
-        return self.buffer.hashValue
-    }
+	internal func hash(into hasher: inout Hasher) {
+		hasher.combine(self.buffer)
+	}
 }

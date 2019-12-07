@@ -231,7 +231,7 @@ extension Context {
     public static func ==(lhs: Context, rhs: Context) -> Bool {
         return lhs.contextId == rhs.contextId
     }
-    public var hashValue: Int {
-        return self.contextId.hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.contextId)
+	}
 }

@@ -127,7 +127,7 @@ internal final class BackingStore: Drawable, RenderConvertible, Hashable {
         //self.surface.lock(options: [], seed: nil)
         let bmp = CGImageAlphaInfo.premultipliedFirst.rawValue |
                   CGBitmapInfo.byteOrder32Little.rawValue
-        let ctx = CGIOSurfaceContextCreate(self.frontBuffer!, Int(size.width),
+		let ctx = CGIOSurfaceContextCreate(__ioNS2CF(self.frontBuffer)!, Int(size.width),
                                            Int(size.height), 8, 32,
                                            self.colorSpace, bmp)!
         handler(ctx)
@@ -179,12 +179,12 @@ internal extension BackingStore {
 }
 
 internal extension BackingStore {
-    internal static func ==(lhs: BackingStore, rhs: BackingStore) -> Bool {
+	static func ==(lhs: BackingStore, rhs: BackingStore) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
-    internal var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
 }
 
 // void UIGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque = NO, CGFloat scale = 1.0);
@@ -200,7 +200,7 @@ import AppKit
 internal extension NSGraphicsContext {
     
     ///
-    internal static func using(_ ctx: CGContext, _ flipped: Bool = false,
+	static func using(_ ctx: CGContext, _ flipped: Bool = false,
                                _ handler: () -> ())
     {
         NSGraphicsContext.saveGraphicsState()

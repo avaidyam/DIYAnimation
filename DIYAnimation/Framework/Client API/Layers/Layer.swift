@@ -822,7 +822,7 @@ public class Layer: Hashable, MediaTiming {
             let a1 = self.beginChange("sublayers")
             let a2 = layer.beginChange("sublayers")
             
-            if let sibling = sibling, let idx = self.sublayers.index(of: sibling) {
+			if let sibling = sibling, let idx = self.sublayers.firstIndex(of: sibling) {
                 self.sublayers.insert(layer, at: idx)
             } else {
                 self.sublayers.insert(layer, at: 0)
@@ -846,7 +846,7 @@ public class Layer: Hashable, MediaTiming {
             let a1 = self.beginChange("sublayers")
             let a2 = layer.beginChange("sublayers")
             
-            if let sibling = sibling, let idx = self.sublayers.index(of: sibling) {
+			if let sibling = sibling, let idx = self.sublayers.firstIndex(of: sibling) {
                 self.sublayers.insert(layer, at: idx + 1)
             } else {
                 self.sublayers.append(layer)
@@ -872,7 +872,7 @@ public class Layer: Hashable, MediaTiming {
             let a2 = layer1.beginChange("sublayers")
             let a3 = layer2.beginChange("sublayers")
             
-            guard let idx = self.sublayers.index(of: layer1) else { return }
+			guard let idx = self.sublayers.firstIndex(of: layer1) else { return }
             self.sublayers[idx] = layer2
             if let idx = layer1.superlayer?.sublayers.firstIndex(of: layer1) {
                 layer1.superlayer!.sublayers.remove(at: idx)
@@ -918,8 +918,8 @@ public class Layer: Hashable, MediaTiming {
     /// sorting by sublayer index; this flattens the rendered layer tree.
     internal func orderedSublayers() -> [Layer] {
         return self.sublayers.sorted { l, r in
-            let l_idx = self.sublayers.index(of: l)!
-            let r_idx = self.sublayers.index(of: l)!
+			let l_idx = self.sublayers.firstIndex(of: l)!
+			let r_idx = self.sublayers.firstIndex(of: l)!
             return (l.zPosition == r.zPosition) ? (l_idx > r_idx) : (l.zPosition > r.zPosition)
         }
     }
@@ -1471,9 +1471,9 @@ public class Layer: Hashable, MediaTiming {
     // MARK: - Hashable & Equatable
     //
     
-    public var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
     
     public static func ==(_ lhs: Layer, _ rhs: Layer) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)

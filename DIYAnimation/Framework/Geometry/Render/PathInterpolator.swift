@@ -154,11 +154,12 @@ extension NSBezierPath {
         for i in 0 ..< self.elementCount {
             let type = self.element(at: i, associatedPoints: &points)
             switch type {
-            case .moveToBezierPathElement: path.move(to: points[0])
-            case .lineToBezierPathElement: path.addLine(to: points[0])
-            case .curveToBezierPathElement: path.addCurve(to: points[2], control1: points[0], control2: points[1])
-            case .closePathBezierPathElement: path.closeSubpath()
-            }
+			case .moveTo: path.move(to: points[0])
+			case .lineTo: path.addLine(to: points[0])
+			case .curveTo: path.addCurve(to: points[2], control1: points[0], control2: points[1])
+			case .closePath: path.closeSubpath()
+			@unknown default: fatalError()
+			}
         }
         return path
     }
@@ -171,9 +172,9 @@ extension NSBezierPath {
 
 internal extension CGColor {
     @usableFromInline
-    internal static var _space = CGColorSpaceCreateDeviceRGB()
+	static var _space = CGColorSpaceCreateDeviceRGB()
     @usableFromInline
-    internal var rgba: [CGFloat] {
+	var rgba: [CGFloat] {
         let x = self.converted(to: CGColor._space,
                                intent: .defaultIntent, options: nil)
         return x?.components ?? [CGFloat](repeating: 0.0,

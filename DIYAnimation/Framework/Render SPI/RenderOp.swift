@@ -46,7 +46,7 @@ internal class RenderOp {
         fileprivate var boundaries: [Int] = []
         
         /// The current encoder that corresponds to the topmost texture, if any.
-        fileprivate weak var encoder: MTLRenderCommandEncoder? = nil
+        fileprivate var encoder: MTLRenderCommandEncoder? = nil
         
         /// The command buffer to encode all operations into.
         fileprivate weak var command: MTLCommandBuffer? = nil
@@ -232,9 +232,9 @@ fileprivate class AttachBufferOp: RenderOp {
         self.buffer = buffer
     }
     fileprivate override func perform(_ state: RenderOp.State) {
-        state.encoder?.setVertexBuffer(state.viewport!, offset: 0, at: .globalNode)
-        state.encoder?.setVertexBuffer(self.buffer, offset: 0, at: .layerNode)
-        state.encoder?.setFragmentBuffer(self.buffer, offset: 0, at: .layerNode)
+        state.encoder!.setVertexBuffer(state.viewport!, offset: 0, at: .globalNode)
+        state.encoder!.setVertexBuffer(self.buffer, offset: 0, at: .layerNode)
+        state.encoder!.setFragmentBuffer(self.buffer, offset: 0, at: .layerNode)
     }
 }
 
@@ -396,7 +396,7 @@ fileprivate class FilterOp: RenderOp {
         
         // Chain the input image -> filter[n]... -> output image:
         let input = CIImage(mtlTexture: tex, options: [
-            kCIImageColorSpace: CGColorSpaceCreateDeviceRGB()
+			CIImageOption.colorSpace: CGColorSpaceCreateDeviceRGB()
         ])!
         if self.filters[0].inputKeys.contains(kCIInputImageKey) {
             self.filters[0].setValue(input, forKey: kCIInputImageKey)
@@ -458,10 +458,10 @@ fileprivate class CompositeFilterOp: RenderOp {
         let tex1 = state.textureStack.last!
         let tex2 = state.lastTexture!
         let input = CIImage(mtlTexture: tex2, options: [
-            kCIImageColorSpace: CGColorSpaceCreateDeviceRGB()
+			CIImageOption.colorSpace: CGColorSpaceCreateDeviceRGB()
         ])!
         let background = CIImage(mtlTexture: tex1, options: [
-            kCIImageColorSpace: CGColorSpaceCreateDeviceRGB()
+			CIImageOption.colorSpace: CGColorSpaceCreateDeviceRGB()
         ])!
         
         // Set the filter values and get the output image:
@@ -631,7 +631,7 @@ extension Drawable {
 fileprivate extension RenderOp.State {
     
     /// Convenience function to create a new unmanaged texture.
-    fileprivate func newTexture(_ width: Int, _ height: Int) -> MTLTexture {
+	func newTexture(_ width: Int, _ height: Int) -> MTLTexture {
         let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm,
                                                             width: width, height: height,
                                                             mipmapped: false)
@@ -640,7 +640,7 @@ fileprivate extension RenderOp.State {
     }
     
     /// Convenience function to create a new depth store.
-    fileprivate func newDepth(_ width: Int, _ height: Int) -> MTLRenderPassDepthAttachmentDescriptor {
+	func newDepth(_ width: Int, _ height: Int) -> MTLRenderPassDepthAttachmentDescriptor {
         let t = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .depth16Unorm,
                                                          width: width, height: height,
                                                          mipmapped: false)
@@ -655,19 +655,19 @@ fileprivate extension RenderOp.State {
     }
     
     /// Convenience function to create a new render pass encoder in the state.
-    fileprivate func newRenderPass(for texture: MTLTexture, clear: Bool = false) {
+	func newRenderPass(for texture: MTLTexture, clear: Bool = false) {
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].loadAction = clear ? .clear : .dontCare
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0)
         pass.colorAttachments[0].texture = texture
         //pass.depthAttachment = self.newDepth(texture.width, texture.height)
-        self.encoder = self.command!.makeRenderCommandEncoder(descriptor: pass)!
+		self.encoder = self.command!.makeRenderCommandEncoder(descriptor: pass)!
         //self.encoder?.setDepthStencilState(self.pipeline!.depthState)
     }
     
     /// Convenience function to create the corresponding sampler state for a layer.
-    fileprivate func sampler(_ params: ContentsOp.SamplerType) -> MTLSamplerState {
+	func sampler(_ params: ContentsOp.SamplerType) -> MTLSamplerState {
         switch params {
         case (.linear, .linear): return self.pipeline!.linear_linearSampler
         case (.linear, .nearest): return self.pipeline!.linear_nearestSampler
@@ -687,7 +687,7 @@ fileprivate extension RenderOp.State {
 internal extension RenderOp.State.Pipeline {
     
     /// Creates all the pipeline states used in rendering the scene.
-    internal static func create(_ device: MTLDevice) -> RenderOp.State.Pipeline {
+	static func create(_ device: MTLDevice) -> RenderOp.State.Pipeline {
         var pipeline = RenderOp.State.Pipeline()
         let pipeDesc = MTLRenderPipelineDescriptor()
         //pipeDesc.depthAttachmentPixelFormat = .depth16Unorm
@@ -775,33 +775,33 @@ internal extension RenderOp.State.Pipeline {
 }
 
 /// Utilities to deal with `BufferIndex`, `TextureIndex`, and `SamplerIndex`.
-extension MTLRenderCommandEncoder {
+internal extension MTLRenderCommandEncoder {
     @inline(__always)
-    internal func setVertexBytes(_ bytes: UnsafeRawPointer, length: Int, at index: BufferIndex) {
+	func setVertexBytes(_ bytes: UnsafeRawPointer, length: Int, at index: BufferIndex) {
         self.setVertexBytes(bytes, length: length, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setVertexBuffer(_ buffer: MTLBuffer?, offset: Int, at index: BufferIndex) {
+	func setVertexBuffer(_ buffer: MTLBuffer?, offset: Int, at index: BufferIndex) {
         self.setVertexBuffer(buffer, offset: offset, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setVertexBufferOffset(_ offset: Int, at index: BufferIndex) {
+	func setVertexBufferOffset(_ offset: Int, at index: BufferIndex) {
         self.setVertexBufferOffset(offset, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setFragmentBuffer(_ buffer: MTLBuffer?, offset: Int, at index: BufferIndex) {
+	func setFragmentBuffer(_ buffer: MTLBuffer?, offset: Int, at index: BufferIndex) {
         self.setFragmentBuffer(buffer, offset: offset, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setFragmentBufferOffset(_ offset: Int, at index: BufferIndex) {
+	func setFragmentBufferOffset(_ offset: Int, at index: BufferIndex) {
         self.setFragmentBufferOffset(offset, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setFragmentTexture(_ texture: MTLTexture?, at index: TextureIndex) {
+	func setFragmentTexture(_ texture: MTLTexture?, at index: TextureIndex) {
         self.setFragmentTexture(texture, index: Int(index.rawValue))
     }
     @inline(__always)
-    internal func setFragmentSamplerState(_ sampler: MTLSamplerState?, at index: SamplerIndex) {
+	func setFragmentSamplerState(_ sampler: MTLSamplerState?, at index: SamplerIndex) {
         self.setFragmentSamplerState(sampler, index: Int(index.rawValue))
     }
 }

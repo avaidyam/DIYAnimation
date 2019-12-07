@@ -22,9 +22,9 @@ extension Weak: Equatable where Element: Equatable {
 }
 
 extension Weak: Hashable where Element: Hashable {
-    var hashValue: Int {
-        return self.value.hashValue
-    }
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(self.value)
+	}
 }
 
 internal extension Hasher {
@@ -32,7 +32,7 @@ internal extension Hasher {
     /// Feed `values` to this hasher, mixing their essential parts into
     /// the hasher state.
     @inline(__always)
-    internal mutating func combine<A: Hashable, B: Hashable>(_ a: A, _ b: B) {
+	mutating func combine<A: Hashable, B: Hashable>(_ a: A, _ b: B) {
         self.combine(a)
         self.combine(b)
     }
@@ -40,7 +40,7 @@ internal extension Hasher {
     /// Feed `values` to this hasher, mixing their essential parts into
     /// the hasher state.
     @inline(__always)
-    internal mutating func combine<A: Hashable, B: Hashable, C: Hashable>(_ a: A, _ b: B, _ c: C) {
+	mutating func combine<A: Hashable, B: Hashable, C: Hashable>(_ a: A, _ b: B, _ c: C) {
         self.combine(a)
         self.combine(b)
         self.combine(c)
@@ -49,7 +49,7 @@ internal extension Hasher {
     /// Feed `values` to this hasher, mixing their essential parts into
     /// the hasher state.
     @inline(__always)
-    internal mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D) {
+	mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D) {
         self.combine(a)
         self.combine(b)
         self.combine(c)
@@ -59,7 +59,7 @@ internal extension Hasher {
     /// Feed `values` to this hasher, mixing their essential parts into
     /// the hasher state.
     @inline(__always)
-    internal mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable, E: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D, _ e: E) {
+	mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable, E: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D, _ e: E) {
         self.combine(a)
         self.combine(b)
         self.combine(c)
@@ -70,7 +70,7 @@ internal extension Hasher {
     /// Feed `values` to this hasher, mixing their essential parts into
     /// the hasher state.
     @inline(__always)
-    internal mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable, E: Hashable, F: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D, _ e: E, _ f: F) {
+	mutating func combine<A: Hashable, B: Hashable, C: Hashable, D: Hashable, E: Hashable, F: Hashable>(_ a: A, _ b: B, _ c: C, _ d: D, _ e: E, _ f: F) {
         self.combine(a)
         self.combine(b)
         self.combine(c)
@@ -99,7 +99,7 @@ extension Strideable where Stride: BinaryInteger {
 }
 
 internal extension Array {
-    internal subscript(_ idx: Index, default defaultValue: @autoclosure () -> Element) -> Element {
+	subscript(_ idx: Index, default defaultValue: @autoclosure () -> Element) -> Element {
         guard (self.startIndex..<self.endIndex).contains(idx) else {
             return defaultValue()
         }

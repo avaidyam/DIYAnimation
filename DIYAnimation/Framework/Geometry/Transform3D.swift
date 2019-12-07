@@ -8,14 +8,14 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
     
     ///
     internal struct Components: Equatable {
-        var scale: float3
-        var skew: float3 // xy, xz, yz
+        var scale: SIMD3<Float>
+        var skew: SIMD3<Float> // xy, xz, yz
         var quaternion: simd_quatf
-        var translate: float3
-        var perspective: float4
-        internal init(scale: float3 = float3(), skew: float3 = float3(),
+        var translate: SIMD3<Float>
+        var perspective: SIMD4<Float>
+        internal init(scale: SIMD3<Float> = SIMD3<Float>(), skew: SIMD3<Float> = SIMD3<Float>(),
                       quaternion: simd_quatf = simd_quatf(),
-                      translate: float3 = float3(), perspective: float4 = float4())
+                      translate: SIMD3<Float> = SIMD3<Float>(), perspective: SIMD4<Float> = SIMD4<Float>())
         {
             self.scale = scale
             self.skew = skew
@@ -40,10 +40,10 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
                 _ m31: Float, _ m32: Float, _ m33: Float, _ m34: Float,
                 _ m41: Float, _ m42: Float, _ m43: Float, _ m44: Float)
     {
-        self.m = float4x4(columns: (float4(m11, m12, m13, m14),
-                                    float4(m21, m22, m23, m24),
-                                    float4(m31, m32, m33, m34),
-                                    float4(m41, m42, m43, m44)))
+        self.m = float4x4(columns: (SIMD4<Float>(m11, m12, m13, m14),
+                                    SIMD4<Float>(m21, m22, m23, m24),
+                                    SIMD4<Float>(m31, m32, m33, m34),
+                                    SIMD4<Float>(m41, m42, m43, m44)))
     }
     
     ///
@@ -150,14 +150,14 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
     
     /// Shortcut for internal use with SIMD variant types.
     @inline(__always)
-    internal static func translation(_ vec: float3) -> Transform3D {
+    internal static func translation(_ vec: SIMD3<Float>) -> Transform3D {
         return Transform3D.translation(x: vec.x, y: vec.y, z: vec.z)
     }
     
     /// Create a transform that represents a rotation operation on the x, y,
     /// and z axes.
     public static func rotation(angle: Float, x: Float = 0, y: Float = 0, z: Float = 0) -> Transform3D {
-        let n = simd_normalize(float3(x, y, z))
+        let n = simd_normalize(SIMD3<Float>(x, y, z))
         let c = cos(angle), s = sin(angle), ci = 1 - c
         return Transform3D(
             n.x*n.x*ci+c,       n.x*n.y*ci+n.z*s,   n.x*n.z*ci-n.y*s,   0,
@@ -169,7 +169,7 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
     
     /// Shortcut for internal use with SIMD variant types.
     @inline(__always)
-    internal static func rotation(angle: Float, _ vec: float3) -> Transform3D {
+    internal static func rotation(angle: Float, _ vec: SIMD3<Float>) -> Transform3D {
         return Transform3D.rotation(angle: angle, x: vec.x, y: vec.y, z: vec.z)
     }
     
@@ -186,7 +186,7 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
     
     /// Shortcut for internal use with SIMD variant types.
     @inline(__always)
-    internal static func scale(_ vec: float3) -> Transform3D {
+    internal static func scale(_ vec: SIMD3<Float>) -> Transform3D {
         return Transform3D.scale(x: vec.x, y: vec.y, z: vec.z)
     }
     
@@ -261,9 +261,9 @@ public struct Transform3D: Codable, CustomStringConvertible, Hashable {
     }
     
     ///
-    public var hashValue: Int {
-        return self.values.hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.values)
+	}
 }
 
 /// Compatibility with CoreAnimation.
@@ -367,10 +367,12 @@ extension Transform3D {
     
     /// All the values of the transformation matrix as 16-element array.
     public var values: [Float] {
-        return self.m.columns.0.map { $0 } +
-            self.m.columns.1.map { $0 } +
-            self.m.columns.2.map { $0 } +
-            self.m.columns.3.map { $0 }
+		return [
+			self.m.columns.0,
+			self.m.columns.1,
+			self.m.columns.2,
+			self.m.columns.3
+		].flatMap { [$0.x, $0.y, $0.z, $0.w] }
     }
     
     /// Determines whether this transformation can be represented affine-ly.
@@ -414,7 +416,7 @@ internal extension Transform3D {
     }
     
     ///
-    internal func decompose() -> Components? {
+	func decompose() -> Components? {
         guard var m = self.normalize() else { return nil }
         m = m.transpose
         var result = Components()
@@ -439,15 +441,15 @@ internal extension Transform3D {
             m[0, 3] = 0; m[1, 3] = 0; m[2, 3] = 0; m[3, 3] = 1
         } else {
             // No perspective.
-            result.perspective = float4(0, 0, 0, 1)
+            result.perspective = SIMD4<Float>(0, 0, 0, 1)
         }
         
         // Next take care of translation (easy).
-        result.translate = float3(m[3, 0], m[3, 1], m[3, 2])
+        result.translate = SIMD3<Float>(m[3, 0], m[3, 1], m[3, 2])
         m[3, 0] = 0; m[3, 1] = 0; m[3, 2] = 0
         
         // Now get scale and shear. // TODO: use float3x3!
-        var row = [float3(), float3(), float3()]
+        var row = [SIMD3<Float>(), SIMD3<Float>(), SIMD3<Float>()]
         for i in 0..<3 {
             row[i][0] = m[i, 0]
             row[i][1] = m[i, 1]
@@ -496,7 +498,7 @@ internal extension Transform3D {
     }
     
     ///
-    internal static func compose(_ components: Components) -> Transform3D {
+	static func compose(_ components: Components) -> Transform3D {
         var m = matrix_identity_float4x4
         m.columns.3 = components.perspective
         m *= Transform3D.translation(components.translate).m
@@ -509,21 +511,21 @@ internal extension Transform3D {
     }
     
     ///
-    internal static func interpolate(from _from: Transform3D, to _to: Transform3D, _ fraction: Float) -> Transform3D
+	static func interpolate(from _from: Transform3D, to _to: Transform3D, _ fraction: Float) -> Transform3D
     {
         guard var from = _from.decompose(), let to = _to.decompose() else {
             return fraction < 0.5 ? _from : _to
         }
-        from.scale = simd_mix(from.scale, to.scale, float3(fraction))
-        from.skew = simd_mix(from.skew, to.skew, float3(fraction))
-        from.translate = simd_mix(from.translate, to.translate, float3(fraction))
-        from.perspective = simd_mix(from.perspective, to.perspective, float4(fraction))
+		from.scale = simd_mix(from.scale, to.scale, SIMD3<Float>(repeating: fraction))
+        from.skew = simd_mix(from.skew, to.skew, SIMD3<Float>(repeating: fraction))
+        from.translate = simd_mix(from.translate, to.translate, SIMD3<Float>(repeating: fraction))
+        from.perspective = simd_mix(from.perspective, to.perspective, SIMD4<Float>(repeating: fraction))
         from.quaternion = simd_slerp(from.quaternion, to.quaternion, fraction)
         return Transform3D.compose(from)
     }
     
     /// Shortcut for quaternion-based matrix rotation.
-    internal static func rotation(quaternion: simd_quatf) -> Transform3D {
+	static func rotation(quaternion: simd_quatf) -> Transform3D {
         return Transform3D(simd: float4x4(quaternion))
     }
     

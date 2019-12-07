@@ -65,12 +65,12 @@ public struct ColorMatrix: CustomStringConvertible, Codable, Hashable {
     internal var m: float4x4
     
     /// The underlying `SIMD` type for the last column.
-    internal var v: float4
+    internal var v: SIMD4<Float>
     
     /// Create a new `ColorMatrix`.
     public init() {
         self.m = float4x4()
-        self.v = float4()
+        self.v = SIMD4<Float>()
     }
     
     /// Create a new `ColorMatrix`.
@@ -79,15 +79,15 @@ public struct ColorMatrix: CustomStringConvertible, Codable, Hashable {
                 _ m31: Float, _ m32: Float, _ m33: Float, _ m34: Float, _ m35: Float,
                 _ m41: Float, _ m42: Float, _ m43: Float, _ m44: Float, _ m45: Float)
     {
-        self.m = float4x4(columns: (float4(m11, m12, m13, m14),
-                                    float4(m21, m22, m23, m24),
-                                    float4(m31, m32, m33, m34),
-                                    float4(m41, m42, m43, m44)))
-        self.v = float4(m15, m25, m35, m45)
+        self.m = float4x4(columns: (SIMD4<Float>(m11, m12, m13, m14),
+                                    SIMD4<Float>(m21, m22, m23, m24),
+                                    SIMD4<Float>(m31, m32, m33, m34),
+                                    SIMD4<Float>(m41, m42, m43, m44)))
+        self.v = SIMD4<Float>(m15, m25, m35, m45)
     }
     
     /// Create a new `ColorMatrix` from the provided internal types.
-    internal init(simd m: float4x4, _ v: float4) {
+    internal init(simd m: float4x4, _ v: SIMD4<Float>) {
         self.m = m
         self.v = v
     }
@@ -97,7 +97,7 @@ public struct ColorMatrix: CustomStringConvertible, Codable, Hashable {
     ///
     /// The input `color` must be represented in the RGBA format.
     public func apply(_ color: CGColor) -> CGColor {
-        var x = float4(color.rgba.map { Float($0) })
+        var x = SIMD4<Float>(color.rgba.map { Float($0) })
         x = self.m * x
         x += self.v
         return CGColor(red: CGFloat(x.x), green: CGFloat(x.y),
@@ -169,9 +169,9 @@ public struct ColorMatrix: CustomStringConvertible, Codable, Hashable {
     }
     
     ///
-    public var hashValue: Int {
-        return self.values.hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.values)
+	}
 }
 
 /// Compatibility with CoreAnimation.
@@ -302,10 +302,12 @@ extension ColorMatrix {
     /// The first 16 elements represent the multiplicative matrix, and the last
     /// four represent the added offset vector.
     public var values: [Float] {
-        return self.v.map { $0 } +
-            self.m.columns.0.map { $0 } +
-            self.m.columns.1.map { $0 } +
-            self.m.columns.2.map { $0 } +
-            self.m.columns.3.map { $0 }
+		return [
+			self.v,
+			self.m.columns.0,
+			self.m.columns.1,
+			self.m.columns.2,
+			self.m.columns.3
+		].flatMap { [$0.x, $0.y, $0.z, $0.w] }
     }
 }

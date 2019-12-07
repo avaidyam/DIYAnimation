@@ -76,13 +76,13 @@ fragment float4 layer_border(Varyings input [[stage_in]],
         auto interior = exterior.inset(float4(layer.borderWidth));
         auto ext_mix = exterior.contains(input.texCoord * plane.zw);
         auto int_mix = interior.contains(input.texCoord * plane.zw);
-        return mix(layer.borderColor, float4(0), 1 - clamp(ext_mix - int_mix, 0, 1));
+        return mix(layer.borderColor, float4(0), 1.0 - clamp(ext_mix - int_mix, 0.0, 1.0));
     } else {
         auto plane = float4(float2(0), layer.bounds.zw);
         auto exterior = Rect(plane);
         auto interior = exterior.inset(float4(layer.borderWidth));
         auto ext_mix = exterior.contains(input.texCoord * plane.zw);
         auto int_mix = interior.contains(input.texCoord * plane.zw);
-        return mix(layer.borderColor, float4(0), 1 - clamp(ext_mix - int_mix, 0, 1));
+        return mix(layer.borderColor, float4(0), 1.0 - clamp(ext_mix - int_mix, 0.0, 1.0));
     }
 }

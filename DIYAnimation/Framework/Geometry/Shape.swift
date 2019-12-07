@@ -193,10 +193,10 @@ public struct Shape: Sequence, Codable, Hashable, CustomStringConvertible {
 internal extension CGRect {
     
     ///
-    internal static let unit = CGRect(x: 0, y: 0, width: 1, height: 1)
+	static let unit = CGRect(x: 0, y: 0, width: 1, height: 1)
     
     ///
-    internal func constrain(_ other: CGRect) -> CGRect {
+	func constrain(_ other: CGRect) -> CGRect {
         return CGRect(x: max(self.origin.x, other.origin.x),
                       y: max(self.origin.y, other.origin.y),
                       width: min(self.size.width, other.size.width),
@@ -204,7 +204,7 @@ internal extension CGRect {
     }
     
     ///
-    internal func constrain(_ other: CGSize) -> CGRect {
+	func constrain(_ other: CGSize) -> CGRect {
         return self.constrain(CGRect(origin: .zero, size: other))
     }
 }

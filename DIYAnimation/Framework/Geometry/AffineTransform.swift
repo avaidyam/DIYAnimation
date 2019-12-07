@@ -17,7 +17,7 @@ internal extension CGAffineTransform {
     /// `contentsGravity`, `contentsCenter`, and `contentsRect`.
     ///
     /// Note: returns the `.identity` matrix if the `gravity` is `.resize`.
-    internal static func apply(gravity: Layer.ContentsGravity, _ center: CGRect,
+	static func apply(gravity: Layer.ContentsGravity, _ center: CGRect,
                                _ contentsRect: CGRect, _ layerBounds: CGRect,
                                _ imageSize: CGSize) -> CGAffineTransform
     {
@@ -67,7 +67,7 @@ internal extension CGAffineTransform {
     
     /// Create the transformation that converts `source` to `dest`, optionally
     /// keeping the aspect ratio.
-    internal static func snap(from source: CGRect, to dest: CGRect,
+	static func snap(from source: CGRect, to dest: CGRect,
                               aspectRatio: AspectRatioType = .none) -> CGAffineTransform
     {
         let axis = (source.width / source.height) > (dest.width / dest.height)
@@ -95,7 +95,7 @@ internal extension CGAffineTransform {
 internal extension CGAffineTransform {
     
     ///
-    internal struct Components: Equatable {
+	struct Components: Equatable {
         var scaleX: CGFloat
         var scaleY: CGFloat
         var angle: CGFloat
@@ -108,7 +108,7 @@ internal extension CGAffineTransform {
     }
     
     ///
-    internal func decompose() -> Components {
+	func decompose() -> Components {
         var m = self
         
         // Compute scaling factors
@@ -144,7 +144,7 @@ internal extension CGAffineTransform {
     }
     
     ///
-    internal static func compose(_ components: Components) -> CGAffineTransform {
+	static func compose(_ components: Components) -> CGAffineTransform {
         var t = CGAffineTransform()
         t.a = components.remainderA
         t.b = components.remainderB
@@ -159,7 +159,7 @@ internal extension CGAffineTransform {
     }
     
     ///
-    internal static func interpolate(from: CGAffineTransform, to: CGAffineTransform, _ fraction: CGFloat) -> CGAffineTransform
+	static func interpolate(from: CGAffineTransform, to: CGAffineTransform, _ fraction: CGFloat) -> CGAffineTransform
     {
         // Decompose source transforms:
         var from = from.decompose()
@@ -175,7 +175,7 @@ internal extension CGAffineTransform {
         // Don't rotate the long way around.
         from.angle = fmod(from.angle, 2 * CGFloat.pi)
         to.angle = fmod(to.angle, 2 * CGFloat.pi)
-        if fabs(from.angle - to.angle) > CGFloat.pi {
+        if abs(from.angle - to.angle) > CGFloat.pi {
             if from.angle > to.angle {
                 from.angle -= 2 * CGFloat.pi
             } else {

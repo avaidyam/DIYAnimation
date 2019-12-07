@@ -7,21 +7,21 @@ import CoreGraphics
 public struct Vector3D: Codable, CustomStringConvertible, Hashable {
     
     /// The underlying `SIMD` type.
-    internal var v: float4
+    internal var v: SIMD4<Float>
     
     ///
     public init() {
-        self.v = float4()
+        self.v = SIMD4<Float>()
     }
     
     ///
     public init(_ v1: Float = 0.0, _ v2: Float = 0.0,
                 _ v3: Float = 0.0, _ v4: Float = 0.0) {
-        self.v = float4(v1, v2, v3, v4)
+        self.v = SIMD4<Float>(v1, v2, v3, v4)
     }
     
     ///
-    internal init(simd v: float4) {
+    internal init(simd v: SIMD4<Float>) {
         self.v = v
     }
     
@@ -43,14 +43,14 @@ public struct Vector3D: Codable, CustomStringConvertible, Hashable {
     
     ///
     public static func +(_ lhs: Vector3D, _ rhs: Float) -> Vector3D {
-        return Vector3D(simd: float4(lhs.v.x + rhs, lhs.v.y + rhs,
-                                     lhs.v.z + rhs, lhs.v.w + rhs))
+        return Vector3D(simd: SIMD4<Float>(lhs.v.x + rhs, lhs.v.y + rhs,
+										   lhs.v.z + rhs, lhs.v.w + rhs))
     }
     
     ///
     public static func -(_ lhs: Vector3D, _ rhs: Float) -> Vector3D {
-        return Vector3D(simd: float4(lhs.v.x - rhs, lhs.v.y - rhs,
-                                     lhs.v.z - rhs, lhs.v.w - rhs))
+        return Vector3D(simd: SIMD4<Float>(lhs.v.x - rhs, lhs.v.y - rhs,
+										   lhs.v.z - rhs, lhs.v.w - rhs))
     }
     
     ///
@@ -85,14 +85,14 @@ public struct Vector3D: Codable, CustomStringConvertible, Hashable {
     
     ///
     public static func +=(_ lhs: inout Vector3D, _ rhs: Float) {
-        lhs.v = float4(lhs.v.x + rhs, lhs.v.y + rhs,
-                       lhs.v.z + rhs, lhs.v.w + rhs)
+        lhs.v = SIMD4<Float>(lhs.v.x + rhs, lhs.v.y + rhs,
+							 lhs.v.z + rhs, lhs.v.w + rhs)
     }
     
     ///
     public static func -=(_ lhs: inout Vector3D, _ rhs: Float) {
-        lhs.v = float4(lhs.v.x - rhs, lhs.v.y - rhs,
-                       lhs.v.z - rhs, lhs.v.w - rhs)
+        lhs.v = SIMD4<Float>(lhs.v.x - rhs, lhs.v.y - rhs,
+							 lhs.v.z - rhs, lhs.v.w - rhs)
     }
     
     ///
@@ -136,45 +136,45 @@ public struct Vector3D: Codable, CustomStringConvertible, Hashable {
     }
     
     ///
-    public var hashValue: Int {
-        return self.values.hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.values)
+	}
 }
 
 /// Compatibility for CoreAnimation.
 public extension Vector3D {
     
     ///
-    public var x: CGFloat {
+	var x: CGFloat {
         get { return CGFloat(self[0]) }
         set { self[0] = Float(newValue) }
     }
     
     ///
-    public var y: CGFloat {
+	var y: CGFloat {
         get { return CGFloat(self[1]) }
         set { self[1] = Float(newValue) }
     }
     
     ///
-    public var z: CGFloat {
+	var z: CGFloat {
         get { return CGFloat(self[2]) }
         set { self[2] = Float(newValue) }
     }
     
     ///
-    public var w: CGFloat {
+	var w: CGFloat {
         get { return CGFloat(self[3]) }
         set { self[3] = Float(newValue) }
     }
     
     ///
-    public var values: [Float] {
-        return self.v.map { $0 }
+	var values: [Float] {
+		return [self.v].flatMap { [$0.x, $0.y, $0.z, $0.w] }
     }
     
     ///
-    public var xy: CGPoint {
+	var xy: CGPoint {
         get { return CGPoint(x: CGFloat(self[0]), y: CGFloat(self[1])) }
         set {
             self[0] = Float(newValue.x)
@@ -183,7 +183,7 @@ public extension Vector3D {
     }
     
     ///
-    public var zw: CGSize {
+	var zw: CGSize {
         get { return CGSize(width: CGFloat(self[2]), height: CGFloat(self[3])) }
         set {
             self[2] = Float(newValue.width)
@@ -192,16 +192,16 @@ public extension Vector3D {
     }
     
     ///
-    public init(_ p: CGPoint, z: CGFloat = 0.0) {
-        self.v = float4()
+	init(_ p: CGPoint, z: CGFloat = 0.0) {
+        self.v = SIMD4<Float>()
         self.xy = p
         self.z = z
         self.w = 1
     }
     
     ///
-    public init(_ r: CGRect) {
-        self.v = float4()
+	init(_ r: CGRect) {
+        self.v = SIMD4<Float>()
         self.xy = r.origin
         self.zw = r.size
     }

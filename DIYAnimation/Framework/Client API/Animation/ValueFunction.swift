@@ -80,7 +80,7 @@ internal extension ValueFunction {
     // props: inputCount, outputCount
     
     ///
-    internal func apply(_ value: Animatable) -> Animatable {
+	func apply(_ value: Animatable) -> Animatable {
         /*
         switch self.name {
         case .rotate:

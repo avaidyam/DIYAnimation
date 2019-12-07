@@ -13,7 +13,7 @@ public protocol DefaultPropertyType {
 }
 
 public extension DefaultPropertyType where Self: Initializable {
-    public static func identityValue() -> Self {
+	static func identityValue() -> Self {
         return self.init()
     }
 }

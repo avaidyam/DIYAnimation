@@ -106,7 +106,7 @@ public final class XPCConnection: Codable, Hashable  {
             self.connection = xpc_connection_create($0, nil)
         }
         xpc_connection_set_event_handler(self.connection, self._recv(_:))
-        if active { defer { self.active = true } }
+        if active { self.active = true }
     }
     
     /// Connect to a service in the global bootstrap domain called `machName`.
@@ -116,7 +116,7 @@ public final class XPCConnection: Codable, Hashable  {
             self.connection = xpc_connection_create_mach_service($0, nil, 0)
         }
         xpc_connection_set_event_handler(self.connection, self._recv(_:))
-        if active { defer { self.active = true } }
+        if active { self.active = true }
     }
     
     /// Connect to a privileged service in the global bootstrap domain called `privilegedMachName`.
@@ -126,7 +126,7 @@ public final class XPCConnection: Codable, Hashable  {
             self.connection = xpc_connection_create_mach_service($0, nil, UInt64(XPC_CONNECTION_MACH_SERVICE_PRIVILEGED))
         }
         xpc_connection_set_event_handler(self.connection, self._recv(_:))
-        if active { defer { self.active = true } }
+        if active {self.active = true }
     }
     
     deinit {
@@ -136,11 +136,11 @@ public final class XPCConnection: Codable, Hashable  {
 
 /// XPCConnection: Hashable, Equatable
 public extension XPCConnection {
-    public var hashValue: Int {
-        return self.connection == nil ? 0 : xpc_hash(self.connection)
-    }
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(self.connection == nil ? 0 : xpc_hash(self.connection))
+	}
     
-    public static func ==(lhs: XPCConnection, rhs: XPCConnection) -> Bool {
+	static func ==(lhs: XPCConnection, rhs: XPCConnection) -> Bool {
         return xpc_equal(lhs.connection, rhs.connection)
     }
 }
@@ -210,13 +210,13 @@ public extension XPCConnection {
     }
     
     /// Installs an error handler for the given error type (one-to-many).
-    public func handle(error: XPCConnection.XPCError, with handler: @escaping () -> ()) {
+	func handle(error: XPCConnection.XPCError, with handler: @escaping () -> ()) {
         self.errorHandlers[error, default: []].append(handler)
     }
     
     /// The block executes on the same serial queue that messages are handled on.
     /// This ensures that no messages are sent while this block executes.
-    public func perform(block barrier: @escaping () -> ()) {
+	func perform(block barrier: @escaping () -> ()) {
         guard self.connection != nil else { return }
         xpc_connection_send_barrier(self.connection, barrier)
     }

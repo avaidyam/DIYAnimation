@@ -197,7 +197,7 @@ extension NSFont: DrawableFont {}
 fileprivate extension CTFramesetter {
     
     /// Shorthand into `CTFrameDraw` to avoid really long function names.
-    fileprivate static func draw(_ string: NSAttributedString,
+	static func draw(_ string: NSAttributedString,
                                  to rect: CGRect,
                                  in ctx: CGContext)
     {

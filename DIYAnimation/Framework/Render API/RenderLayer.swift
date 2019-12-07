@@ -27,19 +27,19 @@ extension Render {
         internal var mask: Layer?
         
         ///
-        internal var position: float3?
+        internal var position: SIMD3<Float>?
         
         ///
-        internal var anchorPoint: float3?
+        internal var anchorPoint: SIMD3<Float>?
         
         ///
-        internal var bounds: float4?
+        internal var bounds: SIMD4<Float>?
         
         ///
         internal var cornerRadius: Float?
         
         ///
-        internal var backgroundColor: float4?
+        internal var backgroundColor: SIMD4<Float>?
         
         ///
         //internal var backgroundPattern: CGPattern?
@@ -48,7 +48,7 @@ extension Render {
         internal var borderWidth: Float?
         
         ///
-        internal var borderColor: float4?
+        internal var borderColor: SIMD4<Float>?
         
         ///
         //internal var borderPattern: CGPattern?
@@ -66,13 +66,13 @@ extension Render {
         internal var shadowOpacity: Float?
         
         ///
-        internal var shadowRadius: float2?
+        internal var shadowRadius: SIMD2<Float>?
         
         ///
-        internal var shadowOffset: float2?
+        internal var shadowOffset: SIMD2<Float>?
         
         ///
-        internal var shadowColor: float4?
+        internal var shadowColor: SIMD4<Float>?
         
         ///
         internal var mipBias: Float?
@@ -148,19 +148,19 @@ extension LayerNode {
             }
         }*/
         
-        self.position = float2(layer.position)
-        self.anchorPoint = float2(layer.anchorPoint)
-        self.bounds = float4(layer.bounds)
+        self.position = SIMD2<Float>(layer.position)
+        self.anchorPoint = SIMD2<Float>(layer.anchorPoint)
+        self.bounds = SIMD4<Float>(layer.bounds)
         self.cornerRadius = Float(layer.cornerRadius)
         self.borderWidth = Float(layer.borderWidth)
-        self.borderColor = float4(layer.borderColor)
-        self.backgroundColor = float4(layer.backgroundColor)
+        self.borderColor = SIMD4<Float>(layer.borderColor)
+        self.backgroundColor = SIMD4<Float>(layer.backgroundColor)
         self.mipBias = Float(layer.minificationFilterBias)
         
         self.shadowOpacity = Float(layer.shadowOpacity)
         self.shadowRadius = Float(layer.shadowRadius)
-        self.shadowOffset = float2(layer.shadowOffset)
-        self.shadowColor = float4(layer.shadowColor)
+        self.shadowOffset = SIMD2<Float>(layer.shadowOffset)
+        self.shadowColor = SIMD4<Float>(layer.shadowColor)
         
         //print("convert: ", terminator: "")
         //benchmark = CurrentMediaTime() * 1000
@@ -181,8 +181,8 @@ extension LayerNode {
         //benchmark = CurrentMediaTime() * 1000
         
         // fix transform!
-        let pivot = self.position - float2(self.bounds.z * 2.0 * (0.5 - self.anchorPoint.x),
-                                           self.bounds.w * 2.0 * (0.5 - self.anchorPoint.y))
+        let pivot = self.position - SIMD2<Float>(self.bounds.z * 2.0 * (0.5 - self.anchorPoint.x),
+												 self.bounds.w * 2.0 * (0.5 - self.anchorPoint.y))
         let forward = Transform3D.translation(x: pivot.x, y: pivot.y).m
         let backward = Transform3D.translation(x: -pivot.x, y: -pivot.y).m
         let bounds = Transform3D.scale(x: self.bounds.z, y: self.bounds.w).m

@@ -272,12 +272,12 @@ public final class Transaction: Hashable {
                 guard Transaction.current?.observer == o else { return }
                 Transaction.current = nil
             }
-            RunLoop.current.add(obs, forMode: .commonModes)
+			RunLoop.current.add(obs, forMode: .common)
             self.observer = obs
         }
         
         // Attach the transaction's observer to the current run loop mode:
-        if let mode = RunLoop.current.currentMode, mode != .commonModes {
+		if let mode = RunLoop.current.currentMode, mode != .common {
             RunLoop.current.add(self.observer!, forMode: mode)
         }
     }
@@ -291,7 +291,7 @@ public final class Transaction: Hashable {
         return lhs === rhs
     }
     
-    public var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
 }

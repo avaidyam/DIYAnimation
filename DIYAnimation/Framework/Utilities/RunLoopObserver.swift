@@ -98,9 +98,9 @@ internal final class RunLoopObserver: Hashable {
         return lhs.cf === rhs.cf
     }
     
-    internal var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	internal func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
 }
 
 internal extension RunLoop {
@@ -110,7 +110,7 @@ internal extension RunLoop {
     /// multiple run loop modes within that run loop.
     ///
     /// If the receiver already contains `observer` in `mode`, this does nothing.
-    internal func add(_ observer: RunLoopObserver, forMode mode: RunLoopMode) {
+	func add(_ observer: RunLoopObserver, forMode mode: RunLoop.Mode) {
         CFRunLoopWakeUp(self.getCFRunLoop())
         CFRunLoopAddObserver(self.getCFRunLoop(), observer.cf,
                              CFRunLoopMode(mode.rawValue as CFString))
@@ -121,7 +121,7 @@ internal extension RunLoop {
     /// added to multiple run loop modes within that run loop.
     ///
     /// If the receiver does not contain `observer` in `mode`, this does nothing.
-    internal func remove(_ observer: RunLoopObserver, forMode mode: RunLoopMode) {
+	func remove(_ observer: RunLoopObserver, forMode mode: RunLoop.Mode) {
         CFRunLoopRemoveObserver(self.getCFRunLoop(), observer.cf,
                                 CFRunLoopMode(mode.rawValue as CFString))
     }
@@ -132,7 +132,7 @@ internal extension RunLoop {
     /// If `observer` was added to `.commonModes`, this function returns `true`
     /// if mode is either `.commonModes` or any of the modes that has been added
     /// to the set of common modes.
-    internal func contains(_ observer: RunLoopObserver, inMode mode: RunLoopMode) -> Bool {
+	func contains(_ observer: RunLoopObserver, inMode mode: RunLoop.Mode) -> Bool {
         return CFRunLoopContainsObserver(self.getCFRunLoop(), observer.cf,
                                          CFRunLoopMode(mode.rawValue as CFString))
     }

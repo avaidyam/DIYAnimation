@@ -23,9 +23,9 @@ extension RenderValue where Self: AnyObject {
     internal static func ==(_ lhs: Self, _ rhs: Self) -> Bool {
         return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
     }
-    internal var hashValue: Int {
-        return ObjectIdentifier(self).hashValue
-    }
+	internal func hash(into hasher: inout Hasher) {
+		hasher.combine(ObjectIdentifier(self))
+	}
 }
 
 //

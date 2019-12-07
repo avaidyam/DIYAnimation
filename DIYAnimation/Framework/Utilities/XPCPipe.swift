@@ -1,5 +1,9 @@
 import XPC
 
+// TODO: MACH_PORT_RIGHT_PORT_SET -> support port sets!
+// mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_PORT_SET, &set)
+// mach_port_insert_member(mach_task_self(), x, set)
+
 ///
 internal final class Pipe: Codable, Hashable { // basically CFMessagePort!
     private enum CodingKeys: CodingKey {}
@@ -57,9 +61,9 @@ internal final class Pipe: Codable, Hashable { // basically CFMessagePort!
     }
     
     
-    internal var hashValue: Int {
-        return xpc_hash(self.pipe)
-    }
+	internal func hash(into hasher: inout Hasher) {
+		hasher.combine(xpc_hash(self.pipe))
+	}
     
     internal static func == (lhs: Pipe, rhs: Pipe) -> Bool {
         return xpc_equal(lhs.pipe, rhs.pipe)

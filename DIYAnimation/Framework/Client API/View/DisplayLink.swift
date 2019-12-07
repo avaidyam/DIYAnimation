@@ -11,7 +11,7 @@ public final class DisplayLink {
     private weak var runloop: RunLoop? = nil
     
     /// The set of `RunLoopMode`s in which the receiver's action will be called.
-    private var modes: Set<RunLoopMode> = []
+	private var modes: Set<RunLoop.Mode> = []
     
     /// The current timestamp of the display frame associated with the most
     /// recent target invocation.
@@ -71,7 +71,7 @@ public final class DisplayLink {
     /// will fire every vsync until removed. Each object may only be added
     /// to a single run-loop, but it may be added in multiple modes at once.
     /// While added to a run-loop it will implicitly be retained.
-    public func add(to runloop: RunLoop, forMode mode: RunLoopMode) {
+	public func add(to runloop: RunLoop, forMode mode: RunLoop.Mode) {
         guard self.runloop == nil else { return }
         self.runloop = runloop
         self.modes.insert(mode)
@@ -84,7 +84,7 @@ public final class DisplayLink {
     /// Removes the receiver from the given mode of the runloop. This will
     /// implicitly release it when removed from the last mode it has been
     /// registered for.
-    public func remove(from runloop: RunLoop, forMode mode: RunLoopMode) {
+	public func remove(from runloop: RunLoop, forMode mode: RunLoop.Mode) {
         guard self.runloop == runloop else { return }
         self.modes.remove(mode)
         if self.modes.count == 0 {
