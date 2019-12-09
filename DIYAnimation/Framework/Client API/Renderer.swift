@@ -97,7 +97,7 @@ public final class Renderer {
     private var pipeline: RenderOp.State.Pipeline
     
     /// Create a new `Renderer` with the given `device`.
-    public required init(_ device: MTLDevice = MTLCreateSystemDefaultDevice()!) {
+    public required init(_ device: MTLDevice) {
         self.semaphore = DispatchSemaphore(value: 1)
         self.dispatch = DispatchQueue(label: "Renderer", attributes: [.concurrent])
         
@@ -150,7 +150,6 @@ public final class Renderer {
             // TODO: Creating the RenderOp takes ~6x more time (10ms vs 1.7ms)! Offload it to pre-render phase.
             // TODO: `LayerNode(from:at:)` is absurdly slow! About ~0.5ms per conversion!
             // TODO: Don't recreate the buffer each time in RenderOp!
-			// TODO: You MUST turn off "GPU Frame Capture" in Xcode or things go bad! Real bad!
             //
             let op = RenderOp(for: self.layer!, with: self.device, size: texSize) {
                 $0.displayIfNeeded() // TODO!

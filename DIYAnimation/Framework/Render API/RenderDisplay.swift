@@ -1,5 +1,7 @@
 
 extension Render {
+	
+	///
 	public final class Display {
 		public private(set) var bounds: CGRect
 		public private(set) var windowID: CGSWindowID
