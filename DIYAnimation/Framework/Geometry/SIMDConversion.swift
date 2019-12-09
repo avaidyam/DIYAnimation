@@ -4,6 +4,12 @@ enum SIMDCodingKeys: CodingKey {
     case values
 }
 
+extension SIMD4 where Scalar == Float {
+    public func map<T>(transform: (Float) -> T) -> Array<T> {
+        return [x, y, z, w].map(transform)
+    }
+}
+
 extension float4x4: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: SIMDCodingKeys.self)

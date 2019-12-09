@@ -1,38 +1,17 @@
-import AppKit
-import MetalKit
-import OpenGL.GL
+import Foundation
+import protocol AppKit.NSApplicationDelegate
 
-///
+/// README
+/// To run this demo, turn off `Metal API Validation` and `Metal Debug Capture`. They currently cause memory leaks.
+
 class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
-    
-    ///
-    private lazy var view: MTKView = MTKView(frame: CGRect(x: 0, y: 0, width: 800, height: 600),
-                                             device: MTLCreateSystemDefaultDevice()!)
-    
-    ///
-    private lazy var window: NSWindow = {
-        let x = NSWindow(contentViewController: NSViewController(view: self.view))
-        x.titlebarAppearsTransparent = true
-        x.titleVisibility = .hidden
-        x.styleMask.formUnion(.fullSizeContentView)
-        x.center()
-        return x
-    }()
-    
-    ///
+	private var display = Render.Display()
+	private var link: DisplayLink!
     private var renderer = Renderer()
-    
-    ///
-    private var timer: Timer!
-    
-    ///
-    private var observer: Any? = nil
     
     /*
     override init() {
         super.init()
-        
-        
         
         func makePair() -> (Transform3D, CATransform3D) {
             let r: ClosedRange<Float> = -100.0...100.0
@@ -97,9 +76,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
     */
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        self.window.makeKeyAndOrderFront(nil)
-        self.renderer.configure(for: self.view)
-        
         let r1 = Transform3D.scale(x: 1.2, y: 1.2)
         let r2 = Transform3D.rotation(angle: Float.pi, z: 1)
         let r3 = Transform3D.translation(x: 100, y: 100)
@@ -108,7 +84,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
         a.fromValue = Transform3D.identity
         a.toValue = r3 * r2 * r1
         a.repeatCount = Int.max
-        
         
         // FIXME: Create all the randomized layer nodes:
         //let model = NSImage(named: NSImage.Name("sample"))!
@@ -173,6 +148,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
             }
         }
         self.renderer.layer = root
+		
+		// TODO: we never handle display bounds changes!
+		self.renderer.bounds = self.display.bounds
+		self.link = DisplayLink {
+			if self.display.currentDrawable == nil {
+				self.display.currentDrawable = self.display.drawable(self.display.bounds.size)
+			}
+			let drawable = self.display.currentDrawable!
+
+			/// Renders a frame into the `currentDrawable` at the current media time.
+			self.renderer.renderTarget = drawable
+			self.renderer.beginFrame(atTime: CurrentMediaTime())
+			self.renderer.render {
+				self.display.render(drawable)
+				// TODO: release and re-obtain a drawable here?
+			}
+			self.renderer.endFrame()
+		}
+		self.link.add(to: .current, forMode: .common)
         
         /*
         // Create layer hierarchy.
@@ -212,22 +206,5 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
         child1.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         child2.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         */
-    }
-    
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        return true
-    }
-}
-
-// -----------------
-// --- UTILITIES ---
-// -----------------
-
-extension NSViewController {
-    
-    /// Create a view controller containing `view`; does not load any nibs.
-    public convenience init(view: NSView) {
-        self.init()
-        self.view = view
     }
 }

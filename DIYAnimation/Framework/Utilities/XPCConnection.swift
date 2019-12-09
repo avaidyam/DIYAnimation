@@ -126,7 +126,7 @@ public final class XPCConnection: Codable, Hashable  {
             self.connection = xpc_connection_create_mach_service($0, nil, UInt64(XPC_CONNECTION_MACH_SERVICE_PRIVILEGED))
         }
         xpc_connection_set_event_handler(self.connection, self._recv(_:))
-        if active {self.active = true }
+        if active { self.active = true }
     }
     
     deinit {

@@ -1,5 +1,4 @@
 import Foundation
-import MetalKit
 import Accelerate
 
 /// Anything that supports being drawn on a `Layer`. Note that the client of the

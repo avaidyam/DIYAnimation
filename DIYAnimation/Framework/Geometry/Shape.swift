@@ -2,6 +2,8 @@
 // TODO: Most of these functions aren't complete or may be incorrect.
 // TODO: Turn most of the mutating methods into operators.
 
+// Use CGRegion!!
+
 /// A `Shape` describes a complex 2D shape composed of multiple rects.
 public struct Shape: Sequence, Codable, Hashable, CustomStringConvertible {
     

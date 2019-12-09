@@ -41,17 +41,12 @@ extern void CATransform3DInterpolate(CATransform3D *, CATransform3D *, CATransfo
 
 
 
-
-
+typedef int CGSValue;
+typedef void *CGSRegionRef;
 typedef int CGSConnectionID;
 typedef int CGSWindowID;
 typedef int CGSSurfaceID;
-
-typedef uint32_t _CGWindowID;
-
-typedef int CGSConnection;
-typedef int CGSWindow;
-typedef int CGSValue;
+typedef int CGSSpaceID;
 
 extern CGSValue CGSCreateCStringNoCopy(const char str);
 extern char CGSCStringValue(CGSValue string);
@@ -63,21 +58,43 @@ typedef enum _CGSWindowOrderingMode {
    kCGSOrderOut                  =  0  // Window is removed from the on-screen window list.
 } CGSWindowOrderingMode;
 
-typedef void *CGSRegion;
-typedef CGSRegion *CGSRegionRef;
-typedef CGSWindow *CGSWindowRef;
+CG_EXTERN CGError CGSNewWindow(CGSConnectionID cid, int /* use 0x3 */, float, float, CGSRegionRef, CGSWindowID *);
+CG_EXTERN CGError CGSNewWindowWithOpaqueShape(CGSConnectionID cid, int backingType /* use 0x3 */, CGSRegionRef region, CGSRegionRef opaqueShape, int flags, const int tags[2], size_t maxTagSize /* use 0x40 */, CGSWindowID *outWID);
+CG_EXTERN CGError CGSNewEmptyRegion(CGSRegionRef *outRegion);
+CG_EXTERN CGError CGSNewRegionWithRect(const CGRect *rect, CGSRegionRef *newRegion);
+CG_EXTERN CGError CGSOrderWindow(CGSConnectionID cid, CGSWindowID win, CGSWindowOrderingMode place, CGSWindowID relativeToWindow /* nullable */);
+CG_EXTERN CGError CGSSetWindowProperty(CGSConnectionID cid, CGSWindowID wid, CGSValue key, CGSValue value);
+CG_EXTERN CGError CGSSetWindowTags(CGSConnectionID cid, CGSWindowID wid, const int tags[2], size_t maxTagSize /* use 0x40 */);
+CG_EXTERN CGError CGSSetWindowOpacity(CGSConnectionID cid, CGSWindowID wid, bool isOpaque);
+CG_EXTERN CGSConnectionID CGSMainConnectionID();
+CG_EXTERN CGError CGSAddSurface(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID *sid);
+CG_EXTERN CGError CGSSetSurfaceBounds(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid, CGRect rect);
+CG_EXTERN CGError CGSOrderSurface(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid, int a, int b);
+CG_EXTERN CGError CGSSetSurfaceOpacity(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid, bool isOpaque);
+CG_EXTERN CGError CGSSetSurfaceResolution(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid, double scale);
+CG_EXTERN CGError CGSMoveWindow(CGSConnectionID cid, CGSWindowID wid, CGPoint *point);
+CG_EXTERN CGLError CGLSetSurface(CGLContextObj gl, CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid);
+CG_EXTERN CGSSpaceID CGSSpaceCreate(CGSConnectionID cid, int flags, CFDictionaryRef options);
+CG_EXTERN void CGSSpaceDestroy(CGSConnectionID cid, CGSSpaceID sid);
+CG_EXTERN CGError CGSSpaceSetName(CGSConnectionID cid, CGSSpaceID sid, CFStringRef name);
+CG_EXTERN CGError CGSSpaceSetAbsoluteLevel(CGSConnectionID cid, CGSSpaceID sid, int level);
+CG_EXTERN void CGSShowSpaces(CGSConnectionID cid, CFArrayRef spaces);
+CG_EXTERN void CGSHideSpaces(CGSConnectionID cid, CFArrayRef spaces);
+CG_EXTERN void CGSAddWindowsToSpaces(CGSConnectionID cid, CFArrayRef windows, CFArrayRef spaces);
+CG_EXTERN void CGSRemoveWindowsFromSpaces(CGSConnectionID cid, CFArrayRef windows, CFArrayRef spaces);
 
-extern CGError CGSNewWindow( CGSConnection cid, int, float, float, const CGSRegion, CGSWindowRef);
-extern CGError CGSNewRegionWithRect( const CGRect * rect, CGSRegionRef newRegion );
-extern CGError CGSOrderWindow(CGSConnection cid, CGSWindowID win, CGSWindowOrderingMode place, CGSWindow relativeToWindow /* nullable */);
-extern CGError CGSSetWindowProperty(const CGSConnection cid, CGSWindowID wid, CGSValue key, CGSValue value);
-extern CGSConnectionID CGSMainConnectionID(void);
-extern CGError CGSAddSurface(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID *sid);
-extern CGError CGSSetSurfaceBounds(CGSConnectionID cid, CGSWindow wid, CGSSurfaceID sid, CGRect rect);
-extern CGError CGSOrderSurface(CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid, int a, int b);
-extern CGError CGSMoveWindow(const CGSConnection cid, const CGSWindowID wid, CGPoint *point);
-extern CGLError CGLSetSurface(CGLContextObj gl, CGSConnectionID cid, CGSWindowID wid, CGSSurfaceID sid);
-
-#define kCGSBufferedBackingType 2
+/*
+ CoreDisplay::DisplaySurface::Get*
+  1. IOSurface
+  2. CGXDisplayDeviceSurface (== same obj)
+  3. IOAccelSurface
+  4. FBO
+  5. GLTexture
+  6. MTLTexture
+  7. Accelerator
+  8. MTLDeviceSPI
+  9. CGLSContext
+ 10. CGXDisplayDevice
+*/
 
 #endif /* Bridge_h */

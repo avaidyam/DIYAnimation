@@ -24,6 +24,9 @@ extension Render {
             
             ///
             internal static let mipmap = Options(rawValue: 1 << 1)
+            
+            ///
+            internal static let swapOrder = Options(rawValue: 1 << 2)
         }
         
         ///
@@ -116,13 +119,13 @@ extension Render {
             let bitsPerComponent = image.bitsPerComponent
             let bytesPerRow = image.bytesPerRow
             let colorSpace = image.colorSpace ?? CGColorSpaceCreateDeviceRGB()
-            let opt = image.bitmapInfo.rawValue
+			let opt = !options.contains(.swapOrder) ? image.bitmapInfo.rawValue :
+						CGBitmapInfo(arrayLiteral: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue), CGBitmapInfo(rawValue: CGImageByteOrderInfo.order32Little.rawValue)).rawValue
             
             // Draw the image into the new context (decoding it):
             var data = Data(count: height * width * bytesPerPixel)
-            data.withUnsafeMutableBytes { (x: UnsafeMutablePointer<UInt8>) -> Void in
-                let ptr = UnsafeMutableRawPointer(x)
-                let ctx = CGContext(data: ptr, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: opt)!
+            data.withUnsafeMutableBytes { (x: UnsafeMutableRawBufferPointer) -> Void in
+				let ctx = CGContext(data: x.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: opt)!
                 
                 // Flip the image if needed, then draw into the bounding rect:
                 if options.contains(.flipped) {
@@ -171,13 +174,9 @@ extension Render {
                 // Transfer that bitmap data into a new `MTLTexture`:
                 let m = MTLTextureDescriptor.texture2DDescriptor(pixelFormat:width:
                     height:mipmapped:)
-                let tex = device.makeTexture(descriptor: m(.rgba8Unorm, width, height,
+                let tex = device.makeTexture(descriptor: m(.bgra8Unorm, width, height,
                                                            self.options.contains(.mipmap)))!
-                let r = MTLRegionMake2D(0, 0, width, height)
-                self.data.withUnsafeMutableBytes { (x: UnsafeMutablePointer<UInt8>) -> Void in
-                    tex.replace(region: r, mipmapLevel: 0, withBytes: x,
-                                bytesPerRow: self.width * self.bytesPerPixel)
-                }
+				self.draw(to: tex)
                 
                 // If we require mipmaps, generate them:
                 if self.options.contains(.mipmap) && tex.mipmapLevelCount > 1 {
@@ -196,6 +195,15 @@ extension Render {
                 Image.textureCache[Weak(self)] = tex
                 return tex
             }
+        }
+        
+        ///
+		internal func draw(to texture: MTLTexture) {
+			let r = MTLRegionMake2D(0, 0, self.width, self.height)
+			self.data.withUnsafeMutableBytes { (x: UnsafeMutableRawBufferPointer) -> Void in
+				texture.replace(region: r, mipmapLevel: 0, withBytes: x.baseAddress!,
+							bytesPerRow: self.width * self.bytesPerPixel)
+			}
         }
         
         /// TODO: Copy sub-image range...

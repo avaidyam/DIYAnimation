@@ -49,7 +49,7 @@ internal class RenderOp {
         fileprivate var encoder: MTLRenderCommandEncoder? = nil
         
         /// The command buffer to encode all operations into.
-        fileprivate weak var command: MTLCommandBuffer? = nil
+        fileprivate var command: MTLCommandBuffer? = nil
         
         /// Contains the pipeline used by the `RenderOp` subclasses.
         /// Create and cache this object until the `MTLDevice` changes.

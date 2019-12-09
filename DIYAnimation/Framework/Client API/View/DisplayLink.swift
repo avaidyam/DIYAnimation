@@ -1,6 +1,8 @@
 import Foundation
 import CoreVideo.CVDisplayLink
 
+// TODO: iOS uses kernel.mk_timer_arm instead.
+
 /// Class representing a timer bound to the display vsync.
 public final class DisplayLink {
     

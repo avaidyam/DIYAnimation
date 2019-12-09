@@ -889,7 +889,7 @@ public class XPCEncoder {
             try key.stringValue.withCString { k in
                 try throwIfExists(key, k, value)
                 value.withUnsafeBytes {
-                    xpc_dictionary_set_data(self.content, k, $0, value.count)
+					xpc_dictionary_set_data(self.content, k, $0.baseAddress!, value.count)
                 }
             }
         }
@@ -921,7 +921,7 @@ public class XPCEncoder {
         func encode(_ value: IOSurface, forKey key: Key) throws {
             try key.stringValue.withCString {
                 try throwIfExists(key, $0, value)
-				xpc_dictionary_set_value(self.content, $0, IOSurfaceCreateXPCObject(__ioNS2CF(value)!))
+				xpc_dictionary_set_value(self.content, $0, IOSurfaceCreateXPCObject(unsafeBitCast(value, to: IOSurfaceRef.self)))
             }
         }
         #endif
@@ -1095,7 +1095,7 @@ public class XPCEncoder {
         
         func encode(_ value: Data) throws {
             value.withUnsafeBytes {
-                xpc_array_append_value(self.content, xpc_data_create($0, value.count))
+				xpc_array_append_value(self.content, xpc_data_create($0.baseAddress!, value.count))
             }
         }
         
@@ -1261,7 +1261,7 @@ public class XPCEncoder {
         func encode(_ value: Data) throws {
             try throwIfExists()
             value.withUnsafeBytes {
-                self.content = xpc_data_create($0, value.count)
+				self.content = xpc_data_create($0.baseAddress!, value.count)
             }
         }
         

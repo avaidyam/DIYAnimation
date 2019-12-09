@@ -91,6 +91,7 @@
 		48DC2A7220F5C235009435D3 /* WindowServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DC2A7120F5C235009435D3 /* WindowServer.swift */; };
 		48DC2A7420F5C269009435D3 /* Markup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DC2A7320F5C269009435D3 /* Markup.swift */; };
 		48DC2A7620F5D286009435D3 /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DC2A7520F5D286009435D3 /* RenderSurface.swift */; };
+		C676D903239E619C005B70E3 /* RenderDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676D902239E619C005B70E3 /* RenderDisplay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -184,6 +185,7 @@
 		48DC2A7120F5C235009435D3 /* WindowServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowServer.swift; sourceTree = "<group>"; };
 		48DC2A7320F5C269009435D3 /* Markup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Markup.swift; sourceTree = "<group>"; };
 		48DC2A7520F5D286009435D3 /* RenderSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
+		C676D902239E619C005B70E3 /* RenderDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderDisplay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -305,6 +307,7 @@
 				48848625210FA88B001E81DF /* RenderLayerClass.swift */,
 				4865650F20CCBC80005D5099 /* RenderContext.swift */,
 				4884862F211D63AF001E81DF /* RenderUpdate.swift */,
+				C676D902239E619C005B70E3 /* RenderDisplay.swift */,
 				48A529552100F08E003D2697 /* RenderServer.swift */,
 				4816027820DB94BA0086BFD5 /* Drawable */,
 			);
@@ -535,6 +538,7 @@
 				4814579B20BCCAF800417E1C /* Animation.swift in Sources */,
 				48DC2A5D20EDFBB8009435D3 /* View.swift in Sources */,
 				48A52958210102A4003D2697 /* Display.swift in Sources */,
+				C676D903239E619C005B70E3 /* RenderDisplay.swift in Sources */,
 				48A529562100F08E003D2697 /* RenderServer.swift in Sources */,
 				48DC2A5420ED8179009435D3 /* PathRasterizer.swift in Sources */,
 				48DC2A6A20F504FC009435D3 /* Filters.metal in Sources */,

@@ -27,7 +27,7 @@ extension Render {
                            width: self.surface.width,
                            height: self.surface.height)
             let ctx = CIContext(options: nil)
-            let img = CIImage(ioSurface: __ioNS2CF(self.surface)!)
+            let img = CIImage(ioSurface: unsafeBitCast(self.surface, to: IOSurfaceRef.self))
             return ctx.createCGImage(img, from: b)!
         }
         
@@ -50,13 +50,13 @@ extension Render {
             guard let surface = IOSurfaceLookup(id) else {
                 throw SurfaceError.invalidID
             }
-            self.surface = __ioCF2NS(surface)!
+            self.surface = unsafeBitCast(surface, to: IOSurface.self)
         }
         
         ///
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
-			try container.encode(IOSurfaceGetID(__ioNS2CF(self.surface)!), forKey: .surfaceID)
+			try container.encode(IOSurfaceGetID(unsafeBitCast(self.surface, to: IOSurfaceRef.self)), forKey: .surfaceID)
         }
         
         ///
@@ -67,9 +67,9 @@ extension Render {
             desc.textureType = .type2D
             desc.usage = .shaderRead
             desc.storageMode = .managed
-            //desc.pixelFormat = .bgra8Unorm
+            desc.pixelFormat = .bgra8Unorm
             return device.makeTexture(descriptor: desc,
-									  iosurface: __ioNS2CF(self.surface)!,
+									  iosurface: unsafeBitCast(self.surface, to: IOSurfaceRef.self),
                                       plane: 0)!
         }
         

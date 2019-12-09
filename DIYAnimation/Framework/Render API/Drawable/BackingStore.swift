@@ -127,8 +127,8 @@ internal final class BackingStore: Drawable, RenderConvertible, Hashable {
         //self.surface.lock(options: [], seed: nil)
         let bmp = CGImageAlphaInfo.premultipliedFirst.rawValue |
                   CGBitmapInfo.byteOrder32Little.rawValue
-		let ctx = CGIOSurfaceContextCreate(__ioNS2CF(self.frontBuffer)!, Int(size.width),
-                                           Int(size.height), 8, 32,
+		let ctx = CGIOSurfaceContextCreate(unsafeBitCast(self.frontBuffer!, to: IOSurfaceRef.self),
+										   Int(size.width), Int(size.height), 8, 32,
                                            self.colorSpace, bmp)!
         handler(ctx)
         //ctx.flush() // might defeat purpose of CGIOSurfaceContext...
