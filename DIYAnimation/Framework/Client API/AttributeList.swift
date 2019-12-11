@@ -23,6 +23,28 @@ extension AttributeListOwner {
     func didSet(_ attributeSet: AttributeList, forKey: String, didChange: Bool) {}
 }
 
+/*
+@propertyWrapper
+struct LayerProperty<T> {
+	let owner: Weak<Layer>
+	let keyPath: ReferenceWritableKeyPath<Layer, T>
+    let `default`: T
+	init(_ layer: inout Layer, _ keyPath: ReferenceWritableKeyPath<Layer, T>, default: T) {
+		self.owner = Weak(layer)
+		self.keyPath = keyPath
+        self.default = `default`
+    }
+    var wrappedValue: T {
+        get { return self.owner.value.values[self.keyPath] as? T ?? self.default }
+        set { self.owner.value.values[self.keyPath] = value }
+    }
+}
+class Test: Layer {
+	@LayerProperty(&self, \.testing, default: "")
+	var testing: String
+}
+*/
+
 ///
 ///
 ///

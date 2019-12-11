@@ -3,6 +3,6 @@ import Foundation
 // tiled layers:
 
 ///
-internal final class ImageProvider {
+internal final class ImageProvider: Drawable {
     ///
 }

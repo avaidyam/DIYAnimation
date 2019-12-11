@@ -92,6 +92,9 @@
 		48DC2A7420F5C269009435D3 /* Markup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DC2A7320F5C269009435D3 /* Markup.swift */; };
 		48DC2A7620F5D286009435D3 /* RenderSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DC2A7520F5D286009435D3 /* RenderSurface.swift */; };
 		C676D903239E619C005B70E3 /* RenderDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676D902239E619C005B70E3 /* RenderDisplay.swift */; };
+		C676D906239FF930005B70E3 /* RenderImageQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676D905239FF930005B70E3 /* RenderImageQueue.swift */; };
+		C676D908239FF93D005B70E3 /* RenderImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676D907239FF93D005B70E3 /* RenderImageProvider.swift */; };
+		C676D90A239FF948005B70E3 /* RenderPixelBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C676D909239FF948005B70E3 /* RenderPixelBuffer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -186,6 +189,9 @@
 		48DC2A7320F5C269009435D3 /* Markup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Markup.swift; sourceTree = "<group>"; };
 		48DC2A7520F5D286009435D3 /* RenderSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderSurface.swift; sourceTree = "<group>"; };
 		C676D902239E619C005B70E3 /* RenderDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderDisplay.swift; sourceTree = "<group>"; };
+		C676D905239FF930005B70E3 /* RenderImageQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImageQueue.swift; sourceTree = "<group>"; };
+		C676D907239FF93D005B70E3 /* RenderImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderImageProvider.swift; sourceTree = "<group>"; };
+		C676D909239FF948005B70E3 /* RenderPixelBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderPixelBuffer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -300,15 +306,13 @@
 				48DC2A6F20F5BAA6009435D3 /* RenderReference.swift */,
 				48DC2A6D20F5B949009435D3 /* RenderHandle.swift */,
 				48DC2A6B20F5B887009435D3 /* RenderImage.swift */,
-				48DC2A7520F5D286009435D3 /* RenderSurface.swift */,
 				488486552121DA3B001E81DF /* RenderTiming.swift */,
 				4865650D20CCBC72005D5099 /* RenderAnimation.swift */,
-				481457A120C1B52E00417E1C /* RenderLayer.swift */,
-				48848625210FA88B001E81DF /* RenderLayerClass.swift */,
 				4865650F20CCBC80005D5099 /* RenderContext.swift */,
 				4884862F211D63AF001E81DF /* RenderUpdate.swift */,
 				C676D902239E619C005B70E3 /* RenderDisplay.swift */,
 				48A529552100F08E003D2697 /* RenderServer.swift */,
+				C676D90B239FFB09005B70E3 /* Layers */,
 				4816027820DB94BA0086BFD5 /* Drawable */,
 			);
 			path = "Render API";
@@ -321,6 +325,7 @@
 				48DC2A7320F5C269009435D3 /* Markup.swift */,
 				4816027920DB94C90086BFD5 /* Animation */,
 				48DC2A3120E6DA55009435D3 /* Layers */,
+				C676D904239FF8DC005B70E3 /* Drawable */,
 				4816026A20DB7BE00086BFD5 /* Action.swift */,
 				48A5291C20F65021003D2697 /* AttributeList.swift */,
 				4816027E20DF62A50086BFD5 /* Filter.swift */,
@@ -336,10 +341,10 @@
 			isa = PBXGroup;
 			children = (
 				481457A320C1B53700417E1C /* Drawable.swift */,
-				4816027420DB8A590086BFD5 /* BackingStore.swift */,
-				4816027020DB8A220086BFD5 /* ImageQueue.swift */,
-				4816027220DB8A3D0086BFD5 /* ImageProvider.swift */,
-				48DC2A6720F400BF009435D3 /* PixelBuffer.swift */,
+				48DC2A7520F5D286009435D3 /* RenderSurface.swift */,
+				C676D909239FF948005B70E3 /* RenderPixelBuffer.swift */,
+				C676D905239FF930005B70E3 /* RenderImageQueue.swift */,
+				C676D907239FF93D005B70E3 /* RenderImageProvider.swift */,
 			);
 			path = Drawable;
 			sourceTree = "<group>";
@@ -427,6 +432,26 @@
 			path = Geometry;
 			sourceTree = "<group>";
 		};
+		C676D904239FF8DC005B70E3 /* Drawable */ = {
+			isa = PBXGroup;
+			children = (
+				4816027420DB8A590086BFD5 /* BackingStore.swift */,
+				4816027020DB8A220086BFD5 /* ImageQueue.swift */,
+				4816027220DB8A3D0086BFD5 /* ImageProvider.swift */,
+				48DC2A6720F400BF009435D3 /* PixelBuffer.swift */,
+			);
+			path = Drawable;
+			sourceTree = "<group>";
+		};
+		C676D90B239FFB09005B70E3 /* Layers */ = {
+			isa = PBXGroup;
+			children = (
+				481457A120C1B52E00417E1C /* RenderLayer.swift */,
+				48848625210FA88B001E81DF /* RenderLayerClass.swift */,
+			);
+			path = Layers;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -505,6 +530,7 @@
 				48A5299B210549AA003D2697 /* AffineTransform.swift in Sources */,
 				4814579920BCCAB900417E1C /* Transaction.swift in Sources */,
 				48A529982103010C003D2697 /* PathInterpolator.swift in Sources */,
+				C676D906239FF930005B70E3 /* RenderImageQueue.swift in Sources */,
 				48DC2A6E20F5B949009435D3 /* RenderHandle.swift in Sources */,
 				48DC2A6120EEA4D1009435D3 /* ThreadSpecific.swift in Sources */,
 				48DC2A4E20EC9AE7009435D3 /* RenderStack.swift in Sources */,
@@ -516,6 +542,7 @@
 				4816028320DF75740086BFD5 /* RenderOp.swift in Sources */,
 				4816028520DF849F0086BFD5 /* Shape.swift in Sources */,
 				48DC2A7020F5BAA6009435D3 /* RenderReference.swift in Sources */,
+				C676D908239FF93D005B70E3 /* RenderImageProvider.swift in Sources */,
 				48DC2A2E20E6DA3D009435D3 /* TextLayer.swift in Sources */,
 				481457A420C1B53700417E1C /* Drawable.swift in Sources */,
 				48DC2A3B20E6DDDD009435D3 /* BackdropLayer.swift in Sources */,
@@ -550,6 +577,7 @@
 				48A529922102EA65003D2697 /* TimingFunction.swift in Sources */,
 				48DC2A6820F400BF009435D3 /* PixelBuffer.swift in Sources */,
 				48848626210FA88B001E81DF /* RenderLayerClass.swift in Sources */,
+				C676D90A239FF948005B70E3 /* RenderPixelBuffer.swift in Sources */,
 				4814579220BCCA6C00417E1C /* Context.swift in Sources */,
 				48DC2A5F20EE0469009435D3 /* BlendComposite.metal in Sources */,
 				48DC2A7620F5D286009435D3 /* RenderSurface.swift in Sources */,

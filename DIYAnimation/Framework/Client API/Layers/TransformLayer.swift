@@ -20,7 +20,7 @@
 /// The `hitTest(_:)` method should never be called on a transform layer as they
 /// do not have a 2D coordinate space into which the point can be mapped.
 public class TransformLayer: Layer {
-    
-    // TODO: just make it a preservesDepth: Bool...
-    
+	
+	// TODO: by default: _layer.setFlags(0x2000 /* do not flatten compositing group? */)
+    // TODO: CAReplicatorLayer.preservesDepth also causes same flags to be set
 }

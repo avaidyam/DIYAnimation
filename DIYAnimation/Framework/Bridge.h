@@ -22,19 +22,6 @@ static inline kern_return_t __bootstrap_register(const char *name, mach_port_t p
     return bootstrap_register(bootstrap_port, name, port);
 }
 
-// Specifically for IOSurface/Ref conversion in Swift 5:
-@class IOSurface;
-CF_IMPLICIT_BRIDGING_ENABLED
-#pragma clang assume_nonnull begin
-static inline IOSurfaceRef _Nullable __ioNS2CF(IOSurface *_Nullable surface) {
-	return (__bridge IOSurfaceRef)surface;
-}
-static inline IOSurface *_Nullable __ioCF2NS(IOSurfaceRef _Nullable surface) {
-	return (__bridge IOSurface *)surface;
-}
-#pragma clang assume_nonnull end
-CF_IMPLICIT_BRIDGING_DISABLED
-
 // TODO:
 #import <QuartzCore/QuartzCore.h>
 extern void CATransform3DInterpolate(CATransform3D *, CATransform3D *, CATransform3D *, double);

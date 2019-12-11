@@ -1,5 +1,8 @@
 import Foundation.NSData
 
+// TODO: ShmemBitmap: new, retain, release, copy, LOD[width/height/data/rowbytes],
+// 					  create[cg]image, fill, incrementSeed, createContext
+
 /// A container for a piece of memory that is shared among multiple threads or
 /// processes.
 internal final class SharedMemory: RenderValue {
@@ -19,7 +22,7 @@ internal final class SharedMemory: RenderValue {
     }
     
     /// Maintains a list of all `SharedMemory`s allocated by the client process.
-    internal static var allAllocations: [Weak<SharedMemory>] = []
+    internal static var allAllocations: [Weak<SharedMemory>] = [] // TODO: lock against this
     
     /// The pointer containing access to the receiver.
     internal lazy var pointer: UnsafeMutableRawBufferPointer = {
@@ -107,12 +110,12 @@ internal final class SharedMemory: RenderValue {
         var _port: mach_port_t = 0
         res = mach_make_memory_entry_64(mach_task_self_, &pageSize, address,
                                         VM_PROT_READ | VM_PROT_WRITE, &_port, 0)
-        self.port = MachPort(port: _port)
+        self.port = MachPort(port: _port) // TODO: maybe make this lazy?
         guard res == KERN_SUCCESS else {
             mach_vm_deallocate(mach_task_self_, self.address, pageSize)
             throw res
         }
-        assert(size >= pageSize, "Allocated size is smaller than requested size!")
+        assert(size <= pageSize, "Allocated size is smaller than requested size!")
         
         SharedMemory.allAllocations.append(Weak(self))
     }
@@ -135,7 +138,6 @@ internal final class SharedMemory: RenderValue {
     /// Deallocate both the port and the VM pages on both ends of the memory.
     deinit {
         mach_vm_deallocate(mach_task_self_, self.address, self.pageSize)
-        
         SharedMemory.allAllocations.removeAll { $0.value == self }
     }
 }

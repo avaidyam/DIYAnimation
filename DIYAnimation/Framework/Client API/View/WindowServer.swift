@@ -19,3 +19,25 @@ DIYAnimation:
 	***** 5. Blit to GL context [PERFORMANCE OVERHEAD HERE]
 	6. Flush
 */
+
+/*
++ (id)serverIfRunning;
++ (id)serverWithOptions:(id)arg1;
++ (id)server;
++ (id)contextWithOptions:(id)arg1;
++ (id)context;
+
+- (unsigned int)contextIdHostingContextId:(unsigned int)arg1;
+- (unsigned int)taskNamePortOfContextId:(unsigned int)arg1;
+- (unsigned int)clientPortOfContextId:(unsigned int)arg1;
+
+@property(readonly) NSArray *displays;
+- (void)_detectDisplays;
+- (id)displayWithUniqueId:(id)arg1;
+- (id)displayWithDisplayId:(unsigned int)arg1;
+- (id)displayWithName:(id)arg1;
+- (void)removeAllDisplays;
+- (void)removeDisplay:(id)arg1;
+- (void)addDisplay:(id)arg1;
+@property(getter=isMirroringEnabled) BOOL mirroringEnabled;
+*/

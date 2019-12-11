@@ -34,6 +34,9 @@ extension Render {
 			err = CGSOrderWindow(CGSMainConnectionID(), windowID, kCGSOrderAbove, 0)
 			assert(err.rawValue == 0)
 			
+			// TODO: unsure if this is necessary on recent macOS versions?
+			//CGContextClearRect(CGWindowContextCreate(CGSMainConnectionID(), windowID, 0), rect)
+			
 			// Create a non-opaque CGS window surface to bind a GL context to.
 			var surfaceID: CGSSurfaceID = 0
 			err = CGSAddSurface(CGSMainConnectionID(), windowID, &surfaceID)
@@ -70,6 +73,9 @@ extension Render {
 			var vSync: GLint = 1
 			err2 = CGLSetParameter(ctx!, kCGLCPSwapInterval, &vSync)
 			assert(err2.rawValue == 0)
+			var opacity: GLint = 0
+			err2 = CGLSetParameter(ctx!, kCGLCPSurfaceOpacity, &opacity)
+			assert(err2.rawValue == 0)
 			
 			// Bind the context's rendering surface and confirm it has a drawable.
 			err2 = CGLSetSurface(ctx!, CGSMainConnectionID(), windowID, surfaceID)
@@ -89,8 +95,9 @@ extension Render {
 		// Clean up the GL context, CGS surface, CGS window, and CGS space.
 		deinit {
 			CGLDestroyContext(self.context)
-			// TODO: SURFACE
-			// TODO: WINDOW
+			// CGSRemoveSurface(CGSMainConnectionID(), surfaceID)
+			// CGSReleaseSurface(CGSMainConnectionID(), surfaceID)
+			// CGSReleaseWindow(CGSMainConnectionID(), windowID)
 			CGSHideSpaces(CGSMainConnectionID(), [self.spaceID] as CFArray)
 			CGSSpaceDestroy(CGSMainConnectionID(), self.spaceID)
 		}
@@ -98,6 +105,7 @@ extension Render {
 		func render(_ texture: MTLTexture) {
 			
 			// Prepare the surface by clearing it with alpha=0.0 (non-opaque).
+			let oldCtx = CGLGetCurrentContext()
 			CGLSetCurrentContext(self.context)
 			glClearColor(0.0, 0.0, 0.0, 0.0)
 			glClear(GLenum(GL_COLOR_BUFFER_BIT))
@@ -121,7 +129,7 @@ extension Render {
 			glBlitFramebuffer(0, 0, GLint(texture.width), GLint(texture.height), 0, 0, GLint(self.bounds.width), GLint(self.bounds.height), GLenum(GL_COLOR_BUFFER_BIT), GLenum(GL_LINEAR))
 			err2 = CGLFlushDrawable(self.context)
 			assert(err2.rawValue == 0)
-			CGLSetCurrentContext(nil)
+			CGLSetCurrentContext(oldCtx)
 		}
 		
 		//

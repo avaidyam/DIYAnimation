@@ -194,19 +194,3 @@ internal extension BackingStore {
 //
 //
 // If the opaque parameter is YES, the alpha channel is ignored and the bitmap is treated as fully opaque (kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host). Otherwise, each pixel uses a premultipled ARGB format (kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host).
-
-#if canImport(AppKit)
-import AppKit
-internal extension NSGraphicsContext {
-    
-    ///
-	static func using(_ ctx: CGContext, _ flipped: Bool = false,
-                               _ handler: () -> ())
-    {
-        NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = NSGraphicsContext(cgContext: ctx, flipped: false)
-        handler()
-        NSGraphicsContext.restoreGraphicsState()
-    }
-}
-#endif

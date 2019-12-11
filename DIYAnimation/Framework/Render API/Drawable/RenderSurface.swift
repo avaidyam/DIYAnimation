@@ -3,10 +3,17 @@ import Metal.MTLTexture
 import CoreImage.CIContext
 import CoreImage.CIImage
 
+///
+internal protocol RenderTexture {
+	//var cleanRect: Rect { get set }
+	//var colorspace: CGColorSpace { get set }
+	// implicitlyOpaque -> check pixel format for A channel
+}
+
 extension Render {
     
     ///
-    internal final class Surface: RenderValue, RenderDrawable {
+    internal final class Surface: RenderTexture, RenderValue, RenderDrawable {
         
         ///
         private enum CodingKeys: CodingKey {
@@ -73,10 +80,5 @@ extension Render {
                                       plane: 0)!
         }
         
-    }
-    
-    ///
-    internal final class PixelBuffer: RenderValue {
-        // TODO
     }
 }

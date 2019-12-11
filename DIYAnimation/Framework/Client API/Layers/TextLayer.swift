@@ -1,5 +1,7 @@
 import Foundation
 
+// TODO: NSFont/NSColor need to be replaced somehow?
+
 ///
 public class TextLayer: Layer {
     

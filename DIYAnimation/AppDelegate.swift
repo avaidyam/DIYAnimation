@@ -74,7 +74,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
                 root.addSublayer(l)
                 l.addAnimation(a, forKey: nil)
             }
-        }
+			
+			let l = TestGL()
+			l.position = CGPoint(x: .random(in: 500...1000),
+								 y: .random(in: 500...1000))
+			l.bounds = CGRect(x: 0, y: 0,
+							  width: .random(in: 200...600),
+							  height: .random(in: 200...600))
+			l.prepareContents() // TODO: should not need this!
+		    root.addSublayer(l)
+		}
 		
 		// Create the renderer and link it to the main display.
 		self.display = Render.Display()
@@ -104,45 +113,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
 		}
 		self.link.add(to: .current, forMode: .common)
     }
-	
-	/*
-	// Create layer hierarchy.
-	let root = Layer()
-	let child1 = Layer()
-	let child2 = Layer()
-	root.addSublayer(child1)
-	root.addSublayer(child2)
-	
-	// Initialize renderer and display link.
-	self.context = Renderer()
-	self.context.layer = root
-	self.timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { _ in
-		self.context.render()
-		self.context.flush()
-	}
-	
-	// Configure `NSOpenGLView` and reshape updates.
-	self.view.openGLContext = self.context.ctx
-	self.context.bounds = self.view.bounds
-	root.frame = self.view.bounds
-	self.observer = NotificationCenter.default.addObserver(forName: NSWindow.didResizeNotification, object: self.view.window!, queue: nil, using: { _ in
-		self.context.bounds = self.view.bounds
-		root.frame = self.view.bounds
-	})
-	
-	// Modify layer properties.
-	root.anchorPoint = .zero
-	root.backgroundColor = .white
-	child1.borderWidth = 10.0
-	child2.borderWidth = 20.0
-	child1.borderColor = .white
-	child2.borderColor = .black
-	child1.cornerRadius = 25.0
-	child2.cornerRadius = 50.0
-	child1.contents = Texture(filePath: "sample.jpg")!
-	child1.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-	child2.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-	*/
     
     /*
 	func makePair() -> (Transform3D, CATransform3D) {
@@ -200,4 +170,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
 	}
 	print("\n\n\n\n")
     */
+}
+
+
+class TestGL: OpenGLLayer {
+	public override func draw(in context: GLContext, pixelFormat: GLPixelFormat,
+							  forLayerTime t: CFTimeInterval,
+							  displayTime ts: UnsafePointer<CVTimeStamp>)
+	{
+        print("hi drawing")
+		
+		glClearColor(1.0, 1.0, 1.0, 1.0)
+		glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+		glColor4f(0.0, 1.0, 0.0, 1.0)
+		glRectf(-0.5, -0.5, 0.5, 0.5)
+		glFlush()
+    }
 }

@@ -1180,15 +1180,15 @@ public class Layer: Hashable, MediaTiming {
             (self.bounds.size.width > 0 && self.bounds.size.height > 0)
         {
             self.delegate?.layerWillDraw(self)
-            self.contents = self.prepareContents()
+            self.prepareContents()
         }
-        
-        // TODO: maybe not do this here??
-        self._needsDisplay = false
+        self._needsDisplay = false // TODO: maybe not do this here??
     }
+	
+	// TODO for prepareContents(): -_display is called after -display but also in -renderInContext:
     
     /// To be implemented by subclasses whose contents are internally managed.
-    internal func prepareContents() -> Drawable {
+    internal func prepareContents() {
         Transaction.ensure()
         let store = Transaction.whileLocked {
             return self.contents as? BackingStore ?? BackingStore()
@@ -1200,7 +1200,7 @@ public class Layer: Hashable, MediaTiming {
             self.prepare(context: ctx)
             self.layerBeingDrawn().draw(in: ctx)
         }
-        return store
+        self.contents = store
     }
     
     /// Applies the transformation matrix on the context for drawing the receiver.
