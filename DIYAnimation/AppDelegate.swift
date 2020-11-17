@@ -1,5 +1,6 @@
 import Foundation
 import protocol AppKit.NSApplicationDelegate
+import class AppKit.NSBezierPath
 
 /// README
 /// To run this demo, turn off `Metal API Validation` and `GPU Frame Capture`. They currently cause memory leaks.
@@ -174,6 +175,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, LayerDelegate {
 
 
 class TestGL: OpenGLLayer {
+	
+	private let path = NSBezierPath(roundedRect: NSMakeRect(0.1, 0.1, 0.9, 0.9), xRadius: 0.25, yRadius: 0.25)
+	
 	public override func draw(in context: GLContext, pixelFormat: GLPixelFormat,
 							  forLayerTime t: CFTimeInterval,
 							  displayTime ts: UnsafePointer<CVTimeStamp>)
@@ -182,8 +186,77 @@ class TestGL: OpenGLLayer {
 		
 		glClearColor(1.0, 1.0, 1.0, 1.0)
 		glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+		glEnable(GLenum(GL_MAP1_VERTEX_3))
 		glColor4f(0.0, 1.0, 0.0, 1.0)
-		glRectf(-0.5, -0.5, 0.5, 0.5)
+		
+		var _point: CGPoint?
+		var points = [CGPoint](repeating: .zero, count: 3)
+		for i in 0 ..< self.path.elementCount {
+            let type = self.path.element(at: i, associatedPoints: &points)
+            switch type {
+			case .moveTo:
+				/*
+				// do nothing
+				*/
+				if let _point = _point {
+					glBegin(GLenum(GL_TRIANGLES))
+					glColor4f(0.0, 0.0, 0.0, 1.0)
+					glVertex2f(GLfloat(0.5), GLfloat(0.5))
+					glVertex2f(GLfloat(_point.x), GLfloat(_point.y))
+					glVertex2f(GLfloat(points[0].x), GLfloat(points[0].y))
+					glEnd()
+				}
+				_point = points[0]
+			case .lineTo:
+				/*
+				glBegin(GLenum(GL_LINE_STRIP))
+				glVertex2f(GLfloat(_point.x), GLfloat(_point.y))
+				glVertex2f(GLfloat(points[0].x), GLfloat(points[0].y))
+				glEnd()
+				*/
+				if let _point = _point {
+					glBegin(GLenum(GL_TRIANGLES))
+					glColor4f(0.0, 0.0, 0.0, 1.0)
+					glVertex2f(GLfloat(0.5), GLfloat(0.5))
+					glVertex2f(GLfloat(_point.x), GLfloat(_point.y))
+					glVertex2f(GLfloat(points[0].x), GLfloat(points[0].y))
+					glEnd()
+				}
+				_point = points[0]
+			case .curveTo:
+				/*
+				var ctrlPoints = [
+					_point.x,    _point.y, 0.0,
+					points[0].x, points[0].y, 0.0,
+					points[1].x, points[1].y, 0.0,
+					points[2].x, points[2].y, 0.0,
+				].map(GLfloat.init)
+				glMap1f(GLenum(GL_MAP1_VERTEX_3),
+						0.0 /* u_min*/, 1.0 /* u_max*/,
+						3 /* stride*/, 4 /*num points */,
+						&ctrlPoints)
+				glBegin(GLenum(GL_LINE_STRIP))
+				for i in 0..<1000 {
+				    glEvalCoord1f(GLfloat(i) / 1000.0);
+				}
+				glEnd()
+				*/
+				if let _point = _point {
+					glBegin(GLenum(GL_TRIANGLES))
+					glColor4f(0.0, 0.0, 0.0, 1.0)
+					glVertex2f(GLfloat(0.5), GLfloat(0.5))
+					glVertex2f(GLfloat(_point.x), GLfloat(_point.y))
+					glVertex2f(GLfloat(points[2].x), GLfloat(points[2].y))
+					glEnd()
+				}
+				_point = points[2]
+			case .closePath:
+				_point = nil // reset
+			@unknown default: fatalError()
+			}
+        }
+		
+		//glRectf(-0.5, -0.5, 0.5, 0.5)
 		glFlush()
     }
 }

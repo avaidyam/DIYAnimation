@@ -2,11 +2,9 @@
 ///
 public class View {
 	
-    // TODO: possible contexts:
-	//   (1) CALayer-hosted --> wrap CAMetalLayer.
-	//   (2) NSView-hosted --> wrap MTKView.
-	//   (3) NSWindow-hosted --> wrap MTKView (or) NSSurface.
-	//   (4) Display-hosted* --> use WindowServer/Display.
+	// 1. real displays = [WS] one overlay CGSWindow per CGDisplay
+	// 2. virtual displays = [WS] REQUEST one overlay CGSSpace per CGSWindow
+	// 3. CA-bridged = [NO] CALayer subclass + renderer
 	
 }
 
